@@ -1,0 +1,11 @@
+# Entry for https://github.com/awesome-dsh-plugin/awesome-dsh-plugin
+# PR target: data/plugins/ANHANP__dsh-branch-tree.yml
+# The stable tarball URL resolves the latest release and keeps a fixed filename,
+# so it never rots when a new version is cut.
+url: https://github.com/ANHANP/dsh-branch-tree
+name: ANHANP/dsh-branch-tree
+category: ui
+tarball: https://github.com/ANHANP/dsh-branch-tree/releases/latest/download/dsh-branch-tree.tgz
+description:
+  en: 'Session branch tree for DeepSeek Harness: a persistent right-side drawer with one card per turn, forks grown from the split round, subagent forests and a minimap.'
+  zh: 'DeepSeek Harness 的会话分支树：右侧持久抽屉，每轮一张卡，分支从分叉那轮长出，支持子代理森林、从任意轮次开新分支与缩略图。'
