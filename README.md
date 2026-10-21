@@ -45,6 +45,7 @@ dsh plugin --profile web add https://github.com/ANHANP/dsh-branch-tree/releases/
 | 点缩略图 / 拖动 | 跳转视野 |
 | 拖动画布 / 双指滚动 | 平移；捏合（或 ⌘+滚轮）缩放 |
 | `→` 提手 | 折叠按钮：展开时只显示小三角，收起时显示下方对话数 |
+| 工具栏 `⇆` | 开关「轮次导航条镜像到左侧」（默认开） |
 
 ## 数据与隐私
 

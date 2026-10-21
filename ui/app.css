@@ -1009,3 +1009,10 @@ body {
   opacity: 1;
   border-color: var(--accent);
 }
+
+/* Toggle state for the turn-rail mirror button. */
+.icon-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}

@@ -297,17 +297,36 @@ window.__ModuleLoader__.load({
 
       // DSH's own turn-navigation rail (the thin ladder of marks on the right
       // edge of the conversation) is mirrored to the conversation column's LEFT
-      // edge. It is a stylesheet override only — no app bundle edits — scoped to
-      // the chat's rail slot so previews/tooltips move with it.
-      var railStyle = document.createElement('style')
-      railStyle.setAttribute('data-dsh-branch-tree-rail', '')
-      railStyle.textContent = [
+      // edge. Stylesheet override only — no app bundle edits. ON by default
+      // (the feature the author uses), with a toolbar toggle persisted locally.
+      var RAIL_KEY = 'dsh-branch-tree:mirror-turn-rail'
+      var railMirrorOn = true
+      try {
+        railMirrorOn = localStorage.getItem(RAIL_KEY) !== '0'
+      } catch {
+        railMirrorOn = true
+      }
+      var RAIL_CSS = [
         '.lZzlVW_slot .lZzlVW_frame{right:auto;left:12px}',
         '.lZzlVW_slot .lZzlVW_mark:before{right:auto;left:0;transform-origin:0% 50%}',
         '.lZzlVW_slot .lZzlVW_mark:focus-visible:after{inset:0 auto 0 0}',
         '.lZzlVW_slot .lZzlVW_preview{right:auto;left:calc(100% + 10px)}',
       ].join('')
-      document.head.append(railStyle)
+      var railStyle = null
+      var applyRailMirror = function () {
+        if (railMirrorOn) {
+          if (railStyle === null) {
+            railStyle = document.createElement('style')
+            railStyle.setAttribute('data-dsh-branch-tree-rail', '')
+            railStyle.textContent = RAIL_CSS
+            document.head.append(railStyle)
+          }
+        } else if (railStyle !== null) {
+          railStyle.remove()
+          railStyle = null
+        }
+      }
+      applyRailMirror()
 
       var open = false
       try {
@@ -357,10 +376,15 @@ window.__ModuleLoader__.load({
       }
 
       var lastSession
+      var postRailState = function () {
+        post({ source: 'dsh-branch-tree', type: 'rail-state', on: railMirrorOn })
+      }
+
       var postSession = function () {
         if (typeof lastSession !== 'string') return
         post({ source: 'dsh-branch-tree', type: 'session', sessionId: lastSession })
         postCamera()
+        postRailState()
       }
 
       var mainSessionId = function () {
@@ -558,6 +582,17 @@ window.__ModuleLoader__.load({
           rememberCamera(data.camera)
           return
         }
+        if (data.type === 'toggle-rail') {
+          railMirrorOn = data.on === true
+          try {
+            localStorage.setItem(RAIL_KEY, railMirrorOn ? '1' : '0')
+          } catch {
+            /* ignore */
+          }
+          applyRailMirror()
+          postRailState()
+          return
+        }
         if (
           data.type === 'fork-round' &&
           typeof data.sessionId === 'string' &&
@@ -680,7 +715,7 @@ window.__ModuleLoader__.load({
           }
           clearPush()
           host.remove()
-          railStyle.remove()
+          if (railStyle !== null) railStyle.remove()
           pushStyle.remove()
         }
       }, 'dsh-branch-tree: persistent drawer')

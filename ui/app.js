@@ -138,6 +138,7 @@ const state = {
   composer: null,
   composerFocus: false,
   minimapData: null,
+  railMirrored: true,
   customChips: loadCustomChips(),
 }
 
@@ -165,6 +166,7 @@ const els = {
   zoomLabel: $('zoom-label'),
   version: $('version'),
   minimap: $('minimap'),
+  railToggle: $('rail-toggle'),
 }
 
 // ── round / branch titles ──────────────────────────────────────────────────
@@ -1491,6 +1493,14 @@ function navigate(sessionId, seq) {
   )
 }
 
+function updateRailToggle() {
+  const button = els.railToggle
+  if (button === null) return
+  if (state.railMirrored) button.classList.add('active')
+  else button.classList.remove('active')
+  button.title = `轮次导航条镜像到左侧：${state.railMirrored ? '开' : '关'}（点击切换）`
+}
+
 function showNavError(message) {
   let toast = document.getElementById('nav-toast')
   if (toast === null) {
@@ -1524,6 +1534,11 @@ window.addEventListener('message', (event) => {
   }
   if (data.type === 'restore-camera') {
     acceptCamera(data.camera)
+    return
+  }
+  if (data.type === 'rail-state') {
+    state.railMirrored = data.on === true
+    updateRailToggle()
     return
   }
   if (data.type === 'fork-done') {
@@ -1757,6 +1772,7 @@ state.branchNames = loadBranchNames()
 observeTheme()
 installPanZoom()
 installMinimap()
+updateRailToggle()
 
 els.refresh.addEventListener('click', () => {
   void load(true)
@@ -1766,6 +1782,12 @@ els.reload.addEventListener('click', () => {
 })
 els.retry.addEventListener('click', () => {
   void load(true)
+})
+els.railToggle.addEventListener('click', () => {
+  window.parent.postMessage(
+    { source: 'dsh-branch-tree', type: 'toggle-rail', on: !state.railMirrored },
+    location.origin,
+  )
 })
 els.zoomIn.addEventListener('click', () => {
   setZoom(state.zoom * 1.2)

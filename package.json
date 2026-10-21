@@ -1,6 +1,6 @@
 {
   "name": "dsh-branch-tree",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Session branch tree for DeepSeek Harness: a persistent right-side drawer with rounds, forks, subagent forests and a minimap.",
   "type": "module",
   "main": "index.js",
