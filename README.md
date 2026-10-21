@@ -23,21 +23,16 @@ DSH 的非官方社区插件。当前为早期版本（0.1.x），在 DSH Deskto
 
 ## 安装
 
-发布到 npm 后：
+当前通过 **GitHub Release 的预构建 tarball** 分发（npm 包稍后；发布后这里会补上 npm 命令）：
 
 ```sh
-dsh plugin --profile desktop add dsh-branch-tree
+dsh plugin --profile web add https://github.com/ANHANP/dsh-branch-tree/releases/latest/download/dsh-branch-tree.tgz
 ```
 
-DSH Desktop 用户也可以从应用的插件管理器安装同样的 npm 包名。装完需要重启 DSH（宿主与客户端两半都在启动时编入模块图）。
+命令会自动把依赖和 `dsh.profile.bundles` 一起写好（已实测），装完重启 DSH。
 
-本地开发时用 link 安装：
-
-```sh
-dsh plugin --profile desktop add /path/to/dsh-branch-tree
-```
-
-安装后如果 `dsh.profile.bundles` 没有自动追加，手工加入 `"dsh-branch-tree"`。
+- **DSH Desktop**：桌面端 profile 由应用自己管理，等本插件被 dsh-market 收录后可直接在插件市场一键安装；也可以把上面的 tarball 地址交给市场/插件管理器的安装入口。
+- **本地开发**：`dsh plugin --profile <profile> add /path/to/dsh-branch-tree`，装完若 `dsh.profile.bundles` 未自动追加，手工加入 `"dsh-branch-tree"`。
 
 ## 使用
 
