@@ -48,7 +48,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "author": "ANHANP",
+  "author": "ANHANP (靳博睿 / Barry Jin) <ANHANP@users.noreply.github.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ANHANP/dsh-branch-tree.git"
