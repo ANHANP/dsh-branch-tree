@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>分支树</title>
+    <link rel="stylesheet" href="/branch-tree/ui/app.css" />
+  </head>
+  <body class="theme-light">
+    <div class="app">
+      <header class="toolbar">
+        <div class="toolbar-title">
+          <span class="toolbar-label">分支树</span>
+          <span class="toolbar-ver" id="version">v0.1.0</span>
+          <span class="toolbar-count" id="count"></span>
+        </div>
+        <div class="toolbar-actions">
+          <button class="icon-btn" id="zoom-out" type="button" title="缩小">−</button>
+          <span class="zoom-label" id="zoom-label">100%</span>
+          <button class="icon-btn" id="zoom-in" type="button" title="放大">＋</button>
+          <button class="icon-btn" id="zoom-reset" type="button" title="重置缩放并回到当前分支">⤢</button>
+          <span class="toolbar-sep"></span>
+          <button class="icon-btn" id="refresh" type="button" title="刷新数据">↻</button>
+          <button class="icon-btn" id="reload" type="button" title="重新载入界面（UI 文件已更新时用）">⟳</button>
+        </div>
+      </header>
+
+      <div class="viewport" id="viewport">
+        <div class="state loading" id="loading">载入分支…</div>
+        <div class="state error" id="error" hidden>
+          <span class="state-text" id="error-text">加载失败</span>
+          <button class="text-btn" id="retry" type="button">重试</button>
+        </div>
+        <div class="state empty" id="empty" hidden>
+          <span class="state-text" id="empty-text">当前会话还没有分支</span>
+        </div>
+        <canvas class="minimap" id="minimap" hidden></canvas>
+        <div class="stage" id="stage" hidden>
+          <div class="canvas" id="canvas">
+            <svg class="edges" id="edges" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="nodes" id="nodes"></div>
+            <div class="hint" id="hint" hidden>还没有分支：在会话里创建分支后会出现在这里</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/branch-tree/ui/app.js" defer></script>
+  </body>
+</html>

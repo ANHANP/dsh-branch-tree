@@ -1,0 +1,1011 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --text: #1f2937;
+  --muted: #7c8798;
+  --faint: #a7b0bf;
+  --line: #d8dee8;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --accent: #3478f6;
+  --accent-soft: #eef4ff;
+  --current-ring: rgba(52, 120, 246, 0.55);
+  --sub-card: #fbfcff;
+  --sub-line: #c9d5e8;
+  --user-tag: #3478f6;
+  --ai-tag: #8b5cf6;
+  --running: #22a06b;
+  --diagnostic: #b45309;
+}
+
+body.theme-dark {
+  color-scheme: dark;
+  --bg: #17191e;
+  --panel: #1e2127;
+  --text: #e5e7eb;
+  --muted: #8b93a5;
+  --faint: #6b7382;
+  --line: #323742;
+  --card: #23272f;
+  --card-border: #333947;
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --accent: #6a9bff;
+  --accent-soft: #232a3a;
+  --current-ring: rgba(106, 155, 255, 0.6);
+  --sub-card: #1f232b;
+  --sub-line: #3a4354;
+  --user-tag: #6a9bff;
+  --ai-tag: #a78bfa;
+  --running: #34d399;
+  --diagnostic: #f59e0b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 12px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: none;
+  height: 36px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.toolbar-title {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.toolbar-label {
+  font-weight: 650;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.toolbar-count {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+}
+
+.zoom-label {
+  min-width: 36px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.toolbar-sep {
+  width: 1px;
+  height: 14px;
+  margin: 0 4px;
+  background: var(--line);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.viewport.dragging {
+  cursor: grabbing;
+}
+
+.viewport.dragging * {
+  cursor: grabbing !important;
+}
+
+.state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+}
+
+.state[hidden] {
+  display: none;
+}
+
+.state.error {
+  color: var(--diagnostic);
+}
+
+.state-text {
+  max-width: 280px;
+  word-break: break-word;
+}
+
+.text-btn {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 3px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.text-btn:hover {
+  border-color: var(--accent);
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.stage[hidden] {
+  display: none;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.edges {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.nodes {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+
+.node {
+  position: absolute;
+  width: 176px;
+  height: 122px;
+}
+
+.node.sub {
+  width: 152px;
+  height: 98px;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 9px 7px;
+  border: 1px solid var(--card-border);
+  border-radius: 9px;
+  background: var(--card);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+}
+
+.card.current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--current-ring), var(--card-shadow);
+}
+
+.node.sub .card {
+  background: var(--sub-card);
+  border-style: dashed;
+}
+
+.node.sub .card:hover {
+  border-style: solid;
+}
+
+.node.sub .card.running {
+  border-color: var(--running);
+}
+
+.node.sub .card.diagnostic {
+  border-color: var(--diagnostic);
+  border-style: dotted;
+  opacity: 0.8;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  min-width: 0;
+}
+
+.dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.dot.current {
+  background: var(--accent);
+}
+
+.dot.running {
+  background: var(--running);
+  box-shadow: 0 0 0 2px rgba(34, 160, 107, 0.18);
+}
+
+.card-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 650;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.line {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.line .tag {
+  flex: none;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.line.user .tag {
+  color: var(--user-tag);
+}
+
+.line.ai .tag {
+  color: var(--ai-tag);
+}
+
+.line .txt {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  word-break: break-word;
+}
+
+.line.user .txt {
+  color: var(--text);
+}
+
+.node.sub .line .txt {
+  -webkit-line-clamp: 2;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  flex: none;
+  min-width: 0;
+  color: var(--faint);
+  font-size: 10px;
+}
+
+.card-meta .badge {
+  flex: none;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.6;
+}
+
+.card-meta .badge.mode {
+  background: transparent;
+  border: 1px solid var(--card-border);
+}
+
+.card-meta .badge.diagnostic {
+  background: transparent;
+  border: 1px solid var(--diagnostic);
+  color: var(--diagnostic);
+}
+
+.meta-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── anchor / fold / subagent controls (top & bottom of the card) ──────── */
+
+.anchor {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--panel);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.anchor.top {
+  top: 0;
+}
+
+.anchor.bottom {
+  top: 100%;
+}
+
+.fold {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fold:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.fold .chevron {
+  font-size: 9px;
+  transform: translateY(-0.5px);
+}
+
+.node.sub .fold {
+  top: 50%;
+  left: 100%;
+  transform: translate(-50%, -50%);
+}
+
+/* entry point for a node's subagent forest, on the card's right edge */
+.sub-entry {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sub-entry:hover,
+.sub-entry.open {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  color: var(--faint);
+  font-size: 10.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hint[hidden] {
+  display: none;
+}
+
+/* edges */
+.edge {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.edge.sub-edge {
+  stroke: var(--sub-line);
+  stroke-dasharray: 3 3;
+}
+
+.edge.current {
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-dasharray: none;
+}
+
+/* ── round-level tree additions ─────────────────────────────────────────── */
+
+.node.blank .card,
+.card.blank-card {
+  border-style: dashed;
+  background: var(--sub-card);
+}
+
+.node.current-session .card {
+  border-color: var(--accent);
+}
+
+.node.current-session .card.current {
+  box-shadow: 0 0 0 2px var(--current-ring), var(--card-shadow);
+}
+
+.session-bar {
+  position: absolute;
+  left: -7px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.edge.branch-edge {
+  stroke: var(--accent);
+  stroke-dasharray: 4 3;
+  stroke-width: 1.6;
+  opacity: 0.75;
+}
+
+.line .txt {
+  -webkit-line-clamp: 2;
+}
+
+/* ── branch labels (round-level tree) ───────────────────────────────────── */
+
+.branch-badge {
+  position: absolute;
+  left: 0;
+  top: -20px;
+  z-index: 4;
+  max-width: 152px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 7px;
+  border: 1px dashed var(--card-border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font: 650 10px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  cursor: text;
+  user-select: none;
+}
+
+.branch-badge:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.branch-badge.custom {
+  border-style: solid;
+  color: var(--text);
+}
+
+.branch-name-input {
+  position: absolute;
+  left: 0;
+  top: -21px;
+  z-index: 5;
+  width: 152px;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: 650 10px/18px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--current-ring);
+}
+
+.toolbar-ver {
+  color: var(--faint);
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+/* ── branch label on the connector (replaces the old floating pill) ───────*/
+
+.branch-label {
+  position: absolute;
+  z-index: 6;
+  transform: translate(-50%, -50%);
+  max-width: 138px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--accent);
+  font: 650 9.5px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  cursor: text;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.branch-label:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.branch-label.custom {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.branch-name-input {
+  position: absolute;
+  z-index: 7;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 18px;
+  padding: 0 7px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: 650 9.5px/16px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--current-ring);
+}
+
+/* ── subagents: meta chip + right-hand drawer column ───────────────────── */
+
+.sub-chip {
+  margin-left: auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: 650 9.5px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.sub-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sub-chip.open {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.drawer-caption {
+  position: absolute;
+  z-index: 5;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font: 650 9.5px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  padding: 1px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  pointer-events: none;
+}
+
+.drawer-divider {
+  position: absolute;
+  width: 1px;
+  border-left: 1px dashed var(--line);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Compact fold: expanded = triangle only, collapsed = triangle + count. */
+.fold:not(.folded) {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+  border-radius: 999px;
+}
+
+.fold.folded {
+  height: 18px;
+  padding: 0 7px;
+}
+
+.fold .chevron {
+  line-height: 1;
+}
+
+.fold-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.nav-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 20;
+  max-width: 90%;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: 11px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
+}
+
+/* ── new-branch composer (hover "+" on a round card) ───────────────────── */
+
+.fork-btn {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--muted);
+  font: 600 13px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.node:hover .fork-btn,
+.fork-btn:focus-visible {
+  opacity: 1;
+}
+
+.fork-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.composer {
+  position: absolute;
+  z-index: 30;
+  width: 320px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.composer-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.composer-title {
+  font: 650 12px/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  color: var(--text);
+}
+
+.composer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.composer .chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 10.5px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  padding: 0 9px;
+  cursor: pointer;
+}
+
+.composer .chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.composer .chip.custom {
+  border-style: dashed;
+}
+
+.composer .chip.plus {
+  width: 24px;
+  padding: 0;
+}
+
+.composer-custom {
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: 11px/24px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  outline: none;
+}
+
+.composer-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 72px;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: 12px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  outline: none;
+}
+
+.composer-error {
+  color: #c0392b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.composer-busy {
+  margin-right: auto;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.composer-cancel,
+.composer-send {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  font: 600 15px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+.composer-cancel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.composer-send {
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+}
+
+.composer-cancel:disabled,
+.composer-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── refined "+ new branch" affordance (CSS-drawn plus) ─────────────────── */
+
+.fork-btn {
+  left: -26px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--muted);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  opacity: 0;
+  transition: opacity 0.12s ease, border-color 0.12s ease, color 0.12s ease, transform 0.12s ease;
+}
+
+.fork-btn::before,
+.fork-btn::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: currentColor;
+  border-radius: 1px;
+  transform: translate(-50%, -50%);
+}
+
+.fork-btn::before {
+  width: 8px;
+  height: 1.5px;
+}
+
+.fork-btn::after {
+  width: 1.5px;
+  height: 8px;
+}
+
+.node:hover .fork-btn,
+.fork-btn:focus-visible {
+  opacity: 1;
+}
+
+.fork-btn:hover,
+.fork-btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* ── minimap (top-right of the drawer) ─────────────────────────────────── */
+
+.minimap {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 132px;
+  height: 150px;
+  z-index: 8;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.14);
+  cursor: crosshair;
+  touch-action: none;
+  opacity: 0.94;
+}
+
+.minimap[hidden] {
+  display: none;
+}
+
+.minimap:hover {
+  opacity: 1;
+  border-color: var(--accent);
+}

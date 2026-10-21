@@ -1,0 +1,60 @@
+{
+  "name": "dsh-branch-tree",
+  "version": "0.1.0",
+  "description": "Session branch tree for DeepSeek Harness: a persistent right-side drawer with rounds, forks, subagent forests and a minimap.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": {
+      "default": "./client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib",
+    "ui",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "session-tree",
+    "branch",
+    "subagent",
+    "minimap",
+    "conversation-history"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "ANHANP",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ANHANP/dsh-branch-tree.git"
+  },
+  "homepage": "https://github.com/ANHANP/dsh-branch-tree#readme",
+  "bugs": {
+    "url": "https://github.com/ANHANP/dsh-branch-tree/issues"
+  }
+}

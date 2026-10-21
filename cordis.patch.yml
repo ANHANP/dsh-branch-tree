@@ -1,0 +1,14 @@
+# dsh-branch-tree bundle patch
+#
+# Installing through the official CLI —
+#
+#   dsh plugin --profile desktop add /Users/hanp/Documents/dsh-branch-tree
+#
+# — reconciles `dsh.profile.bundles` against installed packages and appends
+# `dsh-branch-tree` to the bundle stack (if it does not, add the name there by
+# hand and restart DSH). The profile boot then merges this patch, mounting the
+# host row whose `name` must equal the package name so the client-modules scan
+# resolves the package's `./client` bundle.
+- insert:
+    - id: branch-tree
+      name: 'dsh-branch-tree'
